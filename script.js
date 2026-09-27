@@ -158,11 +158,34 @@ function start() {
 }
 
 $("start").onclick = start;
-$("input").oninput = stats;
+$("input").oninput = () => {
+  const input = $("input");
+  const typed = input.value.split("");
+  const expected = text.split("");
 
-// Wrong characters cannot be deleted.
+  const wrongIndex = typed.findIndex(
+    (char, index) => char !== expected[index]
+  );
+
+  // Keep only the first wrong character.
+  if (wrongIndex !== -1 && typed.length > wrongIndex + 1) {
+    input.value = typed.slice(0, wrongIndex + 1).join("");
+  }
+
+  stats();
+};
+
+// Allow Backspace to correct mistakes.
+// Block further typing until the mistake is removed.
 $("input").onkeydown = event => {
-  if (event.key === "Backspace" || event.key === "Delete") {
+  const typed = $("input").value.split("");
+  const expected = text.split("");
+
+  const wrongIndex = typed.findIndex(
+    (char, index) => char !== expected[index]
+  );
+
+  if (wrongIndex !== -1 && event.key !== "Backspace") {
     event.preventDefault();
   }
 };
@@ -183,6 +206,7 @@ $("mins").onchange = () => {
 };
 
 $("theme").onclick = () => {
+
   document.body.classList.toggle("dark");
 };
 
